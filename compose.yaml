@@ -1,7 +1,7 @@
 services:
   server:
-    image: ghcr.io/solver57/web-project:main
-    build: flask
+    image: ghcr.io/solver57/solver57:main
+    build: app
     restart: always
     ports: 
       - '8000:8000'

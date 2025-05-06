@@ -22,6 +22,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: cd solver &&
             docker compose down &&
+            git pull &&
             docker compose pull &&
             docker compose up -d &&
             docker system prune -af
