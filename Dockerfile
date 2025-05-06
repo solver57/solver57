@@ -20,4 +20,6 @@ RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install -r requirements.txt
 
+EXPOSE 8000
+
 CMD ["gunicorn", "app:app"]
