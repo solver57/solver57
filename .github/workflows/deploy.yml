@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-
+    environment: Main
     steps:
       - name: Restart docker compose
         uses: appleboy/ssh-action@v1.0.3
