@@ -11,7 +11,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=off \
     VIRTUAL_ENV=/app/.venv \
-    GUNICORN_CMD_ARGS=--workers=3 --timeout=60 --bind=0.0.0.0:8000
+    GUNICORN_CMD_ARGS="--workers=3 --timeout=60 --bind=0.0.0.0:8000"
 
 COPY --chown=nonroot:nonroot . .
 
