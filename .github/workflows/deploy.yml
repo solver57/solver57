@@ -1,0 +1,27 @@
+name: Deploy docker compose to VM
+on:
+  workflow_run:
+    types:
+      - completed
+    workflows: ["Build docker image"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Restart docker compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: cd solver &&
+            docker compose down &&
+            docker compose pull &&
+            docker compose up -d &&
+            docker system prune -af
