@@ -83,3 +83,6 @@ fabric.properties
 
 # Logs
 *.out*
+
+# Database
+app/db_game.sqlite

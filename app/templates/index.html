@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Клетчатое поле</title>
+    <style>
+        .cell {
+            width: 20px;
+            height: 20px;
+            border: 1px solid black;
+            display: table-cell;
+            text-align: center;
+        }
+        .selected {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <table id="field">
+        <tr>
+            <th></th>
+            {% for x in range(n) %}
+                <th>{{ x }}</th>
+            {% endfor %}
+        </tr>
+        {% for y in range(m) %}
+            <tr>
+                <th>{{ y }}</th>
+                {% for x in range(n) %}
+                    <td class="cell" data-x="{{ x }}" data-y="{{ y }}"></td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+    <button id="button">Сбросить</button>
+    <div id="selected-cells"></div>
+
+    <script>
+        const field = document.getElementById("field");
+        const button = document.getElementById("button");
+        const selectedCellsDiv = document.getElementById("selected-cells");
+
+        field.addEventListener("click", (event) => {
+            const cell = event.target;
+            if (cell.classList.contains("cell")) {
+                const x = cell.dataset.x;
+                const y = cell.dataset.y;
+                fetch("/click", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `x=${x}&y=${y}`
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    selectedCellsDiv.innerText = `Выбранные клетки: ${data.selected_cells}`;
+                    cell.classList.toggle("selected");
+                });
+            }
+        });
+
+        button.addEventListener("click", () => {
+            fetch("/button", {
+                method: "POST"
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                selectedCellsDiv.innerText = `Выбранные клетки: ${data.selected_cells}`;
+                field.querySelectorAll(".selected").forEach((cell) => cell.classList.remove("selected"));
+            });
+        });
+    </script>
+</body>
+</html>
