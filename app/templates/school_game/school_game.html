@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block content %}
+<style>
+  .table {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    width: 100%;
+    margin: 0 auto;
+    grid-gap: 2px;
+    background-color: #0b7f96;
+  }
+  .row {
+    display: contents;
+  }
+  .cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #fff;
+  }
+</style>
+<h1 style="text-align: center">Школьный календарь</h1>
+<br />
+<h2 for="date1">Введите дату</h2>
+<form action="" method="post" novalidate>
+  <div>
+    {{ form.csrf_token }}
+  </div>
+  {% for field in form if field.name != 'csrf_token' %}
+  <div>
+    {{ field.label() }}
+    {{ field() }}
+    {% for error in field.errors %}
+    <div class="error">{{ error }}</div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</form>
+<br />
+
+<div class="table">
+  {% for j in range(5) %}
+  <div class="row">
+    {% for i in range(10) %} {% if colormap is none %}
+    <div class="cell">
+      {{ matrix[j][i] }}
+    </div>
+    {% else %}
+      <div
+        class="cell"
+        style="background-color: #{{ colormap[matrix[j][i]] }};"
+      ></div>
+    {% endif %} {% endfor %}
+  </div>
+  {% endfor %}
+</table>
+{% endblock %}

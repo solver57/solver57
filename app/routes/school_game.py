@@ -1,13 +1,13 @@
 from pprint import pprint
-from flask import Blueprint, render_template, redirect
+from flask import Blueprint, render_template
 
 
-from .models import User, db
-from .forms import Gameform, LoginForm
-from .algorithm.some_functions import make_matrix, create_colored_excel
+from ..forms.school_game import Gameform
+from ..algorithm.some_functions import make_matrix, create_colored_excel
 
 
-bp = Blueprint("main", __name__)
+bp = Blueprint("school_game", __name__, url_prefix="/school_game",
+               template_folder="school_game")
 
 LETTERS = ["L", 'P', 'F', 'T', 'H', 'S', 'W', 'D']
 
@@ -35,7 +35,7 @@ def find_el(matrix: list[list[str]], num: int):
         return matrix
 
 
-@bp.route("/school_game", methods=["GET", "POST"])
+@bp.route("/", methods=["GET", "POST"])
 def generate_matrix1(num: int = 1):
     num = 1
     form = Gameform()
@@ -49,41 +49,11 @@ def generate_matrix1(num: int = 1):
         matrix0 = make_matrix(date, (5, 10))[0]
         colormap = create_colored_excel(matrix0)
         colormap["0"] = "FFFFFF"
-        # colormap_list = generate_colormap_list(matrix0, colormap)
 
         if form.res.data:
             matrix = matrix0.copy()
             num = 1
-            # pprint(matrix)
-            # pprint(colormap_list)
         elif form.hint.data:
-            print(num)
             matrix = find_el(matrix0, num)
             num += 1
-            # pprint(matrix)
-    return render_template("school.html", form=form, matrix=matrix, colormap=colormap)
-
-
-@bp.route("/form", methods=["GET", "POST"])
-def login():  # TODO
-    form = LoginForm()
-    r_user = None
-    if form.validate_on_submit():
-        res = db.session.query(User).filter(
-            User.email == form.email.data.lower())
-        el = res.first()
-        if el is None:
-            user = User(
-                email=form.email.data,
-                name=form.username.data,
-                surname=form.surname.data,
-                hashed_password=form.password.data
-            )
-            db.session.add(user)
-            db.session.commit()
-        else:
-            if el.hashed_password != form.password.data:
-                render_template("form.html", form=form, right_user=r_user)
-        return redirect("/school_game")
-
-    return render_template("form.html", form=form, right_user=r_user)
+    return render_template("school_game/school_game.html", form=form, matrix=matrix, colormap=colormap)

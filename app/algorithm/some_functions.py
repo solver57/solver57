@@ -175,13 +175,16 @@ def create_colored_excel(matrices: list[list[str]]):
                  for letter, color in zip(unique_letters, palette)}
     return color_map
 
+
 def rotate_matrix(matrix: list[list[str]]):
     """Поворачивает матрицу на 90 градусов по часовой стрелке."""
     return [list(row) for row in zip(*matrix[::-1])]
 
+
 def reflect_matrix(matrix: list[list[str]]):
     """Отражает матрицу по горизонтали."""
     return [row[::-1] for row in matrix]
+
 
 def generate_all_variants(matrix: list[list[str]]):
     """Генерирует все 8 вариантов матрицы (повороты и отражения)."""
