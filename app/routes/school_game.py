@@ -3,7 +3,7 @@ from flask_login import login_required
 
 
 from ..forms.school_game import Gameform
-from ..algorithm.some_functions import make_matrix, create_colored_excel
+from ..algorithm.main import make_matrix, create_colored_excel
 
 
 bp = Blueprint("school_game", __name__, url_prefix="/school_game",
