@@ -27,15 +27,31 @@
   <div>
     {{ form.csrf_token }}
   </div>
-  {% for field in form if field.name != 'csrf_token' %}
   <div>
-    {{ field.label() }}
-    {{ field() }}
-    {% for error in field.errors %}
+    {{ form.attempts() }}
+    {{ form.last_date() }}
+  </div>
+  <div>
+    {{ form.date_res.label() }}
+    {{ form.date_res() }}
+    {% for error in form.hint.errors %}
     <div class="error">{{ error }}</div>
     {% endfor %}
   </div>
-  {% endfor %}
+  <div>
+    {{ form.res.label() }}
+    {{ form.res(class="btn btn-primary") }}
+    {% for error in form.res.errors %}
+    <div class="error">{{ error }}</div>
+    {% endfor %}
+  </div>
+  <div>
+    {{ form.hint.label() }}
+    {{ form.hint(class="btn btn-secondary") }}
+    {% for error in form.hint.errors %}
+    <div class="error">{{ error }}</div>
+    {% endfor %}
+  </div>
 </form>
 <br />
 

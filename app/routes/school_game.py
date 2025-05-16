@@ -1,5 +1,5 @@
-from pprint import pprint
 from flask import Blueprint, render_template
+from flask_login import login_required
 
 
 from ..forms.school_game import Gameform
@@ -26,34 +26,35 @@ def find_el(matrix: list[list[str]], num: int):
         matrix_base = [[""] * 10 for _ in range(5)]
         matrix_copy = matrix.copy()
         letter = LETTERS[:num]
-        print(letter)
         matrix_base = [[matrix_copy[j][i] if matrix_copy[j][i] in letter else "0" for i in range(
             len(matrix_copy[0]))] for j in range(len(matrix_copy))]
-        pprint(matrix_copy)
         return matrix_base
     else:
         return matrix
 
 
+@login_required
 @bp.route("/", methods=["GET", "POST"])
-def generate_matrix1(num: int = 1):
-    num = 1
+def generate_matrix1():
     form = Gameform()
     matrix = [[""] * 10] * 5
     colormap = None
-    date = None
-    if form.validate_on_submit():
-        date = form.date_res.data
-        if date is None:
-            return  # TODO
+    date = form.date_res.data
+    attempts = 1
+    if form.validate_on_submit() and date is not None:
+        if form.attempts.data and form.last_date.data == str(form.date_res.data):
+            attempts = int(form.attempts.data)
+        print(form.last_date.data)
+        form.last_date.data = str(date)
         matrix0 = make_matrix(date, (5, 10))[0]
         colormap = create_colored_excel(matrix0)
         colormap["0"] = "FFFFFF"
 
         if form.res.data:
             matrix = matrix0.copy()
-            num = 1
+            attempts = 1
         elif form.hint.data:
-            matrix = find_el(matrix0, num)
-            num += 1
+            matrix = find_el(matrix0, attempts)
+            attempts += 1
+    form.attempts.data = str(attempts)
     return render_template("school_game/school_game.html", form=form, matrix=matrix, colormap=colormap)
