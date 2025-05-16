@@ -22,10 +22,10 @@ def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
-            return render_template('register.html', title='Регистрация', form=form,
+            return render_template('auth/register.html', title='Регистрация', form=form,
                                    message="Пароли не совпадают")
         if db.session.query(User).filter(User.email == form.email.data).first():
-            return render_template('register.html', title='Регистрация', form=form,
+            return render_template('auth/register.html', title='Регистрация', form=form,
                                    message="Такой пользователь уже есть")
         user = User(
             name=form.name.data,
