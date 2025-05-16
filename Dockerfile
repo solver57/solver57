@@ -4,10 +4,10 @@ COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
 WORKDIR /app
-# ADD . /app
+ADD . /app
 
-RUN adduser --disabled-password appuser
-    # chown -R appuser:appuser /app
+RUN adduser --disabled-password appuser && \
+    chown -R appuser:appuser /app
 
 USER appuser
 
