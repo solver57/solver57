@@ -66,15 +66,6 @@ fabric.properties
 # Ignore Setup Realated docs
 /*.egg-info/
 
-# Ignore any videos
-*.mp4
-*.flv
-
-# Ignore stuff in the data folder
-/data/videos/*.mp4
-/data/videos/*.flv
-/data/bot_data/*.csv
-
 # Ignore CSVs
 *.csv
 
@@ -83,3 +74,6 @@ fabric.properties
 
 # Logs
 *.out*
+
+# Flask instance
+instance

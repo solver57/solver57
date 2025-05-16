@@ -1,25 +1,20 @@
-FROM python:3.13.2-alpine
+FROM python:3-slim
 
-RUN adduser -D nonroot && \
-    mkdir /app && \
-    chown -R nonroot:nonroot /app
+COPY requirements.txt .
+RUN python -m pip install -r requirements.txt
 
 WORKDIR /app
-USER nonroot
+ADD . /app
+
+RUN adduser --disabled-password appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=off \
-    VIRTUAL_ENV=/app/.venv \
-    GUNICORN_CMD_ARGS="--workers=3 --timeout=60 --bind=0.0.0.0:8000"
-
-COPY --chown=nonroot:nonroot . .
-
-RUN pip install --upgrade pip
-RUN python -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-RUN pip install -r requirements.txt
+    PIP_NO_CACHE_DIR=off
 
 EXPOSE 8000
 
-CMD ["gunicorn", "app:app"]
+CMD "gunicorn"
