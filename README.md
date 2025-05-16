@@ -7,3 +7,5 @@
 Разрабатывали Александр Летучий и Мария Алгабекова
 
 [Ссылка на презентацию](https://docs.google.com/presentation/d/13rxlTGN-MySTn6rwB_uT6he0p9ZJCFEDgIPoodIATQ0/edit?slide=id.g35953005c4a_0_0#slide=id.g35953005c4a_0_0)
+
+[Ссылка на развернутую версию](https://solver.asalde.ru/)
