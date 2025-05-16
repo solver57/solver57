@@ -1,44 +1,45 @@
 from pprint import pprint
 from random import randint
-from time import time
+from typing import Generator
 
 
-def get_random_A(rows: int, cols: int, share: float = 0.5) -> [[int]]:
+def get_random_a(rows: int, cols: int, share: float = 0.5) -> list[list[int]]:
     '''случайная матрица для тестирования с редким набором единиц и уникальными строками'''
-    matrix = set()
+    matrix: set[tuple[int, ...]] = set()
     while len(matrix) < rows:
-        row = tuple(1 if randint(0, 1000000) < 1000000 * share else 0 for _ in range(cols))
+        row = tuple(1 if randint(0, 1000000) < 1000000 *
+                    share else 0 for _ in range(cols))
         if row not in matrix:
             matrix.add(row)
     return [list(m) for m in matrix]
 
 
 class ColumnNode:
-    def __init__(self, name):
-        self.L = self
-        self.R = self
-        self.U = self
-        self.D = self
-        self.C = self  # для заголовка указывает на себя
-        self.S = 0  # размер столбца
-        self.N = name  # имя столбца
+    def __init__(self, name: str):
+        self.left = self
+        self.right = self
+        self.up: ColumnNode | DataNode = self
+        self.down: ColumnNode | DataNode = self
+        self.column_header = self  # для заголовка указывает на себя
+        self.size: int = 0  # размер столбца
+        self.name = name  # имя столбца
 
 
 class DataNode:
-    def __init__(self, col_header):
-        self.L = self
-        self.R = self
-        self.U = self
-        self.D = self
-        self.C = col_header  # ссылка на заголовок столбца
+    def __init__(self, column_header: ColumnNode):
+        self.left = self
+        self.right = self
+        self.up: ColumnNode | DataNode = self
+        self.down: ColumnNode | DataNode = self
+        self.column_header = column_header  # ссылка на заголовок столбца
 
 
 class DLX:
-    def __init__(self, matrix, column_names):
+    def __init__(self, matrix: list[list[int]], column_names: list[str]):
         # Создаем заголовочную ноду
         self.root = ColumnNode("root")
-        self.columns = {}
-        self.solution = []
+        self.columns: dict[str, ColumnNode] = {}
+        self.solution: list[DataNode] = []
         self.matrix = matrix
         self.column_names = column_names
 
@@ -46,16 +47,15 @@ class DLX:
         prev = self.root
         for name in column_names:
             col = ColumnNode(name)
-            col.L = prev
-            col.R = self.root
-            prev.R = col
-            self.root.L = col
+            col.left = prev
+            col.right = self.root
+            prev.right = col
+            self.root.left = col
             prev = col
             self.columns[name] = col
 
         # Добавление строк
-        for row_idx, row in enumerate(matrix):
-            first_node = None
+        for row in matrix:
             prev_node = None
             for col_idx, val in enumerate(row):
                 if val == 1:
@@ -64,99 +64,97 @@ class DLX:
                     node = DataNode(col_header)
 
                     # Вертикальные связи
-                    node.U = col_header.U
-                    node.D = col_header
-                    col_header.U.D = node
-                    col_header.U = node
+                    node.up = col_header.up
+                    node.down = col_header
+                    col_header.up.down = node
+                    col_header.up = node
 
                     # Горизонтальные связи
                     if prev_node:
-                        node.L = prev_node
-                        node.R = prev_node.R
-                        prev_node.R.L = node
-                        prev_node.R = node
-                    else:
-                        first_node = node
+                        node.left = prev_node
+                        node.right = prev_node.right
+                        prev_node.right.left = node
+                        prev_node.right = node
                     prev_node = node
 
-                    col_header.S += 1
+                    col_header.size += 1
 
-    def cover(self, col):
+    def cover(self, col: ColumnNode):
         # Удаляем столбец из списка заголовков
-        col.R.L = col.L
-        col.L.R = col.R
+        col.right.left = col.left
+        col.left.right = col.right
 
         # Удаляем все строки в этом столбце
-        i = col.D
+        i = col.down
         while i != col:
-            j = i.R
+            j = i.right
             while j != i:
-                j.D.U = j.U
-                j.U.D = j.D
-                j.C.S -= 1
-                j = j.R
-            i = i.D
+                j.down.up = j.up
+                j.up.down = j.down
+                j.column_header.size -= 1
+                j = j.right
+            i = i.down
 
-    def uncover(self, col):
+    def uncover(self, col: ColumnNode):
         # Восстанавливаем строки в обратном порядке
-        i = col.U
+        i = col.up
         while i != col:
-            j = i.L
+            j = i.left
             while j != i:
-                j.C.S += 1
-                j.D.U = j
-                j.U.D = j
-                j = j.L
-            i = i.U
+                j.column_header.size += 1
+                j.down.up = j
+                j.up.down = j
+                j = j.left
+            i = i.up
 
         # Возвращаем столбец в список заголовков
-        col.R.L = col
-        col.L.R = col
+        col.right.left = col
+        col.left.right = col
 
-    def search(self, k=0):
-        if self.root.R == self.root:
+    def search(self, k: int = 0) -> Generator[list[DataNode]]:
+        if self.root.right == self.root:
             yield self.solution.copy()
             return
 
         # Выбор столбца с минимальным размером
-        c = self.root.R
+        c = self.root.right
         min_size = float('inf')
-        j = self.root.R
+        j = self.root.right
         while j != self.root:
-            if j.S < min_size:
+            if j.size < min_size:
                 c = j
-                min_size = j.S
-            j = j.R
+                min_size = j.size
+            j = j.right
 
         self.cover(c)
 
-        r = c.D
-        while r != c:
+        r = c.down
+        while isinstance(r, DataNode):
             self.solution.append(r)
 
-            j = r.R
+            j = r.right
             while j != r:
-                self.cover(j.C)
-                j = j.R
+                self.cover(j.column_header)
+                j = j.right
 
             yield from self.search(k + 1)
 
             self.solution.pop()
 
-            j = r.L
+            j = r.left
             while j != r:
-                self.uncover(j.C)
-                j = j.L
+                self.uncover(j.column_header)
+                j = j.left
 
-            r = r.D
+            r = r.down
 
         self.uncover(c)
 
     def solve(self):
         return list(self.search())
 
-    def solve_iteratively(self, max_num=0):
-        sols = []
+    def solve_iteratively(self, max_num: int = 0):
+        sols: list[list[DataNode]] = []
         m = self.matrix
         columns = self.column_names
         num = 0
@@ -167,9 +165,10 @@ class DLX:
                 solution = next(dlx_once.search())
                 sols.append(solution)
                 res = show([solution])[0]
-                rows_to_delete = []
+                rows_to_delete: list[list[int]] = []
                 for r in res:
-                    row_to_delete = [1 if columns[i] in r else 0 for i in range(len(columns))]
+                    row_to_delete = [1 if columns[i]
+                                     in r else 0 for i in range(len(columns))]
                     if row_to_delete in m:
                         rows_to_delete.append(row_to_delete)
                 for row in rows_to_delete:
@@ -180,23 +179,23 @@ class DLX:
         return sols
 
 
-def show(solutions):
-    sols = []
+def show(solutions: list[list[DataNode]]):
+    sols: list[frozenset[tuple[str, ...]]] = []
     for sol in solutions:
-        rows = []
+        rows: list[tuple[str, ...]] = []
         for node in sol:
-            row = [node.C.N]
-            current = node.R
+            row = [node.column_header.name]
+            current = node.right
             while current != node:
-                row.append(current.C.N)
-                current = current.R
+                row.append(current.column_header.name)
+                current = current.right
             rows.append(tuple(sorted(row)))
         sols.append(frozenset(rows))
     return [sorted([t for t in s], key=lambda x: x[-1]) for s in set(sols)]
 
 
 # Пример использования:
-if __name__ == "__main__":
+def example():
     matrix = [
         [1, 0, 0, 1, 0, 0, 1],
         [1, 0, 0, 1, 0, 0, 0],
@@ -223,3 +222,7 @@ if __name__ == "__main__":
         for r in solution:
             print(r)
         print()
+
+
+if __name__ == "__main__":
+    example()
