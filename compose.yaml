@@ -1,6 +1,7 @@
 services:
   web:
     image: ghcr.io/solver57/solver57:main
+    env_file: .env
     build: .
     restart: always
     ports:
@@ -16,5 +17,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
 volumes:
   postgres_data:

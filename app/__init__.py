@@ -22,8 +22,8 @@ def create_app():
         SECRET_KEY="dev",
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
-    app.config.from_pyfile("config.py", silent=True)
-
+    app.config.from_prefixed_env()
+    
     db.init_app(app)
 
     from .models import User
