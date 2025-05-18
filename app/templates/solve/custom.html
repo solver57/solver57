@@ -2,7 +2,7 @@
 <style>
   .table {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat({{ matrix[0]|length }}, 1fr);
     width: 100%;
     margin: 0 auto;
     grid-gap: 2px;
@@ -22,19 +22,19 @@
 </style>
 <h1 style="text-align: center">Школьный календарь</h1>
 <br />
-<h2 for="date1">Введите дату</h2>
-<form action="" method="post" novalidate>
+<h2 for="date1">Введите шаблон</h2>
+<form action="" method="post" enctype="multipart/form-data" novalidate>
   <div>
     {{ form.csrf_token }}
   </div>
   <div>
     {{ form.attempts() }}
-    {{ form.last_date() }}
+    {{ form.last_template() }}
   </div>
   <div>
-    {{ form.date_res.label() }}
-    {{ form.date_res() }}
-    {% for error in form.hint.errors %}
+    {{ form.template.label() }}
+    {{ form.template() }}
+    {% for error in form.template.errors %}
     <div class="error">{{ error }}</div>
     {% endfor %}
   </div>
@@ -55,10 +55,11 @@
 </form>
 <br />
 
+{% if matrix is not none %}
 <div class="table">
-  {% for j in range(5) %}
+  {% for j in range(matrix|length) %}
   <div class="row">
-    {% for i in range(10) %} {% if colormap is none %}
+    {% for i in range(matrix[j]|length) %} {% if colormap is none %}
     <div class="cell">
       {{ matrix[j][i] }}
     </div>
@@ -71,4 +72,5 @@
   </div>
   {% endfor %}
 </table>
+{% endif %}
 {% endblock %}

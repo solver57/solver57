@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 import os
 
+from .routes import solve
+
 
 class Base(DeclarativeBase):
     pass
@@ -32,9 +34,9 @@ def create_app():
 
     login_manager.init_app(app)
 
-    from .routes import main, school_game, auth
+    from .routes import main, auth
     app.register_blueprint(main.bp)
-    app.register_blueprint(school_game.bp)
+    app.register_blueprint(solve.bp)
     app.register_blueprint(auth.bp)
 
     return app

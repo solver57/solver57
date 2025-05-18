@@ -56,6 +56,17 @@ N_H_W = '''пн,0,8
 30,4,6
 31,4,7'''
 
+SCHOOL_FIGURES = {
+    "L": [(0, 0), (0, 1), (1, 1), (2, 1), (3, 1), (4, 1)],
+    "P": [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1)],
+    "F": [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 2)],
+    "T": [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (1, 1)],
+    "H": [(0, 0), (0, 1), (1, 1), (2, 0), (2, 1), (2, 2)],
+    "S": [(0, 0), (0, 1), (1, 0), (2, 0), (2, 1), (3, 1)],
+    "W": [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 2)],
+    "D": [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2)],
+}
+
 
 def create_dict_from_str(cal: str):
     data_dict: dict[str, tuple[int, int]] = {}
@@ -115,19 +126,26 @@ def format_date_ru(date_obj: date):
         raise e
 
 
-# Задаем фигуры для покрытия
-def make_matrix(date_obj: date, board_size: tuple[int, int]):
+def make_school(board_size: tuple[int, int], date_obj: date):
     n_h_w_dict = create_dict_from_str(N_H_W)
+    formatted_date = format_date_ru(date_obj)
+    excluded_cells: list[tuple[int, int]] = []
+    for cell in formatted_date:
+        excluded_cells.append(n_h_w_dict[cell])
+    return make_matrix(board_size, SCHOOL_FIGURES, excluded_cells)
 
-    f1 = Figure('L', [(0, 0), (0, 1), (1, 1), (2, 1), (3, 1), (4, 1)])
-    f2 = Figure('P', [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1)])
-    f3 = Figure('F', [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 2)])
-    f4 = Figure('T', [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (1, 1)])
-    f5 = Figure('H', [(0, 0), (0, 1), (1, 1), (2, 0), (2, 1), (2, 2)])
-    f6 = Figure('S', [(0, 0), (0, 1), (1, 0), (2, 0), (2, 1), (3, 1)])
-    f7 = Figure('W', [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2), (2, 2)])
-    f8 = Figure('D', [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2)])
-    figures = [f1, f2, f3, f4, f5, f6, f7, f8]
+# Задаем фигуры для покрытия
+
+
+def make_matrix(board_size: tuple[int, int],
+                figures_dict: dict[str, list[tuple[int, int]]],
+                excluded_cells: list[tuple[int, int]]):
+
+    figures: list[Figure] = []
+    for name, figure in figures_dict.items():
+        f = Figure(name, figure)
+        figures.append(f)
+
     # и для каждой фигуры получаем ее варианты и добавляем в общий словарь вариантов
     f_vars: dict[str, list[tuple[int, int]]] = {}
     for fig in figures:
@@ -136,9 +154,8 @@ def make_matrix(date_obj: date, board_size: tuple[int, int]):
 
     # Создаем доску некоторой формы, вырезая ненужные клетки из прямоугольника
     b = Board(board_size[0], board_size[1])
-    formatted_date = format_date_ru(date_obj)
-    for cell in formatted_date:
-        b.flip(*n_h_w_dict[cell])
+    for cell in excluded_cells:
+        b.flip(*cell)
 
     # Список заголовков столбцов, где часть - клетки поля, а часть - уникальные типы фигурок
     column_names = generate_column_names(b, f_vars)

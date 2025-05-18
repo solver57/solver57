@@ -19,8 +19,9 @@
       <nav class="navbar navbar-light bg-light">
         <p>
           <a class="navbar-brand" href="/">Школьный календарь</a>
+          <a href="/solve/school" class="btn btn-primary">Решить школьную головоломку</a>
           {% if current_user.is_authenticated %}
-          <a href="/school_game" class="btn btn-primary">Решить головоломку</a>
+          <a href="/solve/custom" class="btn btn-primary">Решить кастомную головоломку</a>
           {% endif %}
         </p>
         {% if current_user.is_authenticated %}

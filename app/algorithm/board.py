@@ -50,7 +50,7 @@ def occupy(mino: list[tuple[int, int]], x: int, y: int):
 
 
 class Board:
-    def __init__(self, h: int, w: int):
+    def __init__(self, w: int, h: int):
         self.matrix = [
             [f'{i:0>2}_{j:0>2}' for j in range(w)] for i in range(h)]
         self.allowed = defaultdict(
