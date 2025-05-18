@@ -4,6 +4,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+import os
 
 
 class Base(DeclarativeBase):
@@ -19,8 +20,9 @@ def create_app():
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_mapping(
         SECRET_KEY="dev",
-        SQLALCHEMY_DATABASE_URI="sqlite:///db_game.sqlite"
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
+    app.config.from_pyfile("config.py", silent=True)
 
     db.init_app(app)
 
