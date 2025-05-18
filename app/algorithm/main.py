@@ -67,6 +67,8 @@ SCHOOL_FIGURES = {
     "D": [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2)],
 }
 
+SCHOOL_BOARD_SIZE = (10, 5)
+
 
 def create_dict_from_str(cal: str):
     data_dict: dict[str, tuple[int, int]] = {}
@@ -126,13 +128,13 @@ def format_date_ru(date_obj: date):
         raise e
 
 
-def make_school(board_size: tuple[int, int], date_obj: date):
+def make_school(date_obj: date):
     n_h_w_dict = create_dict_from_str(N_H_W)
     formatted_date = format_date_ru(date_obj)
     excluded_cells: list[tuple[int, int]] = []
     for cell in formatted_date:
         excluded_cells.append(n_h_w_dict[cell])
-    return make_matrix(board_size, SCHOOL_FIGURES, excluded_cells)
+    return make_matrix(SCHOOL_BOARD_SIZE, SCHOOL_FIGURES, excluded_cells)
 
 # Задаем фигуры для покрытия
 

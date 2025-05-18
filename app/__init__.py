@@ -4,9 +4,6 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-import os
-
-from .routes import solve
 
 
 class Base(DeclarativeBase):
@@ -25,7 +22,7 @@ def create_app():
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
     app.config.from_prefixed_env()
-    
+
     db.init_app(app)
 
     from .models import User
@@ -34,9 +31,10 @@ def create_app():
 
     login_manager.init_app(app)
 
-    from .routes import main, auth
+    from .routes import main, auth, solve, solve_api
     app.register_blueprint(main.bp)
     app.register_blueprint(solve.bp)
+    app.register_blueprint(solve_api.bp)
     app.register_blueprint(auth.bp)
 
     return app

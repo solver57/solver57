@@ -45,7 +45,7 @@ def solve_school():
             attempts = int(form.attempts.data)
         print(form.last_date.data)
         form.last_date.data = str(date)
-        matrix = make_school((10, 5), date)[0]
+        matrix = make_school(date)[0]
         colormap = create_colored_excel(matrix)
         colormap["0"] = "FFFFFF"
 
