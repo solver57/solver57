@@ -6,6 +6,7 @@
     width: 100%;
     margin: 0 auto;
     grid-gap: 2px;
+    padding: 2px;
     background-color: #0b7f96;
   }
   .row {
@@ -17,42 +18,14 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-color: #fff;
+    background-color: white;
   }
 </style>
 <h1 style="text-align: center">Школьный календарь</h1>
 <br />
 <h2 for="date1">Введите шаблон</h2>
-<form action="" method="post" enctype="multipart/form-data" novalidate>
-  <div>
-    {{ form.csrf_token }}
-  </div>
-  <div>
-    {{ form.attempts() }}
-    {{ form.last_template() }}
-  </div>
-  <div>
-    {{ form.template.label() }}
-    {{ form.template() }}
-    {% for error in form.template.errors %}
-    <div class="error">{{ error }}</div>
-    {% endfor %}
-  </div>
-  <div>
-    {{ form.res.label() }}
-    {{ form.res(class="btn btn-primary") }}
-    {% for error in form.res.errors %}
-    <div class="error">{{ error }}</div>
-    {% endfor %}
-  </div>
-  <div>
-    {{ form.hint.label() }}
-    {{ form.hint(class="btn btn-secondary") }}
-    {% for error in form.hint.errors %}
-    <div class="error">{{ error }}</div>
-    {% endfor %}
-  </div>
-</form>
+{% import "bootstrap/wtf.html" as wtf %}
+{{ wtf.quick_form(form, button_map={"res": "primary", "hint": "secondary"}) }}
 <br />
 
 {% if matrix is not none %}

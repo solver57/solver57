@@ -56,7 +56,7 @@ def solve_school():
             matrix = find_el(matrix, attempts)
             attempts += 1
     form.attempts.data = str(attempts)
-    return render_template("solve/school.html", form=form, matrix=matrix, colormap=colormap)
+    return render_template("solve/solve.html", form=form, matrix=matrix, colormap=colormap)
 
 
 @bp.route("/custom", methods=["GET", "POST"])
@@ -89,7 +89,7 @@ def solve_custom():
 
     form.attempts.data = str(attempts)
     return render_template(
-        "solve/custom.html",
+        "solve/solve.html",
         form=form,
         matrix=matrix,
         colormap=colormap,

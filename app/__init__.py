@@ -1,6 +1,7 @@
 """Initialize Flask app."""
 
 from flask import Flask
+from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -23,6 +24,7 @@ def create_app():
     )
     app.config.from_prefixed_env()
 
+    Bootstrap(app)
     db.init_app(app)
 
     from .models import User
