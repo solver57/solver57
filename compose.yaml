@@ -6,6 +6,9 @@ services:
     restart: always
     ports:
       - '8000:8000'
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: postgres:latest
     env_file: .env
@@ -13,7 +16,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     user: postgres
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
